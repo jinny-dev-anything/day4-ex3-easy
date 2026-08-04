@@ -7,41 +7,26 @@ pipeline {
                 checkout scm
             }
         }
-        stage('Test') {
+
+        stage('Install') {
             steps {
                 script {
                     if (isUnix()) {
-                        sh '''
-                            set -e
-                            if ! grep -q "hello" hello.txt; then
-                                echo "실패: hello.txt에 'hello' 문자가 없습니다."
-                                exit 1
-                            fi
-                        '''
+                        sh 'pip3 install --quiet pytest'
                     } else {
-                        bat '''
-                            findstr /i /c:"hello" hello.txt >nul
-                            if errorlevel 1 (
-                                echo 실패: hello.txt에 'hello' 문자가 없습니다.
-                                exit /b 1
-                            )
-                        '''
+                        bat 'pip install --quiet pytest'
                     }
                 }
             }
         }
 
-        stage('Run') {
+        stage('Test') {
             steps {
                 script {
                     if (isUnix()) {
-                        sh '''
-                            chmod +x main.sh
-                            ./main.sh
-                        '''
+                        sh 'python3 -m pytest -v'
                     } else {
-                        // Windows 환경에서는 main.bat을 실행합니다.
-                        bat 'main.bat'
+                        bat 'python -m pytest -v'
                     }
                 }
             }
@@ -50,10 +35,10 @@ pipeline {
 
     post {
         success {
-            echo '성공'
+            echo '테스트 완료: 모든 테스트를 통과했습니다.'
         }
         failure {
-            echo '실패'
+            echo '테스트 실패'
         }
     }
 }
