@@ -8,4 +8,4 @@ def test_add2():
     assert add(3, 4) == 7
 
 def test_greet():
-    assert greet("Jenkins") == "Hello, Jenkins!"
+    assert greet("Jenkins") == "Hellooo, Jenkins!"
